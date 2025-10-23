@@ -1,0 +1,31 @@
+# يمكنك تعديل هذا الملف لتخصيص إعدادات الأمان
+# لمزيد من المعلومات:
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection: https://docs.gitlab.com/ee/user/application_security/secret_detection/pipeline/configure
+# Dependency Scanning: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+
+stages:
+  - test
+  - secret-detection
+
+variables:
+  SECRET_DETECTION_ENABLED: "true"
+
+# تضمين قالب فحص الأسرار من GitLab
+include:
+  - template: Security/Secret-Detection.gitlab-ci.yml
+
+# يمكنك إضافة مهام أخرى إن احتجت لاحقًا
+# مثال: فحص الكود الثابت (SAST)
+# - template: Security/SAST.gitlab-ci.yml
+
+# مهمة إضافية اختيارية لاختبار المشروع قبل الفحص
+test_job:
+  stage: test
+  script:
+    - echo "Running tests..."
+- template: Security/SAST.gitlab-ci.yml
+- template: Security/Dependency-Scanning.gitlab-ci.yml
+include:
+  - template: Security/Security.gitlab-ci.yml
